@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Общежитие{% endblock %}</title>
+
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f8f9fa;
+        }
+        .navbar-custom {
+            background-color: #007bff;
+        }
+        .navbar-custom .nav-link, .navbar-custom .navbar-brand {
+            color: white;
+        }
+        .flash-messages {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-custom mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Общежитие</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNavbar">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="/students">Список жильцов</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/add-student">Добавить жильца</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/rooms">Список комнат</a></li>
+					{% if current_user.is_authenticated and current_user.is_admin %}
+                    <li class="nav-item"><a class="nav-link" href="/add-room">Добавить комнату</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/history">История жильцов</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/report">Отчёт</a></li>
+					<li class="nav-item"><a class="nav-link" href="/add-user">Добавить пользователя</a></li>
+					<li class="nav-item"><a class="nav-link" href="/users">Пользователи</a></li>
+					<li class="nav-item"><a class="nav-link" href="{{ url_for('audit_log') }}">Аудит-лог</a></li>
+					{% endif %}
+                </ul>
+				<!-- Справа — имя пользователя и выход -->
+				<ul class="navbar-nav mb-2 mb-lg-0">
+					{% if current_user.is_authenticated %}
+						<li class="nav-item">
+							<div class="d-flex align-items-center">
+								<span class="badge bg-light text-dark me-3 px-3 py-2 rounded-pill">
+									👤 {{ current_user.username }}
+								</span>
+								<a class="btn btn-outline-light btn-sm" href="{{ url_for('logout') }}">Выйти</a>
+							</div>
+						</li>
+					{% else %}
+						<li class="nav-item">
+							<a class="nav-link text-white" href="{{ url_for('login') }}">Войти</a>
+						</li>
+					{% endif %}
+				</ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-messages alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

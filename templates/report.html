@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Отчёт{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">📊 Отчёт по общежитию</h1>
+
+    <ul class="list-group">
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <i class="bi bi-building-fill"></i> Всего комнат:
+            <span class="badge bg-primary rounded-pill">{{ total_rooms }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <i class="bi bi-people-fill"></i> Жильцов проживает:
+            <span class="badge bg-primary rounded-pill">{{ total_students }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <i class="bi bi-door-closed-fill text-danger"></i> Занятых комнат:
+            <span class="badge bg-danger rounded-pill">{{ occupied_rooms }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <i class="bi bi-door-open-fill text-success"></i> Свободных комнат:
+            <span class="badge bg-success rounded-pill">{{ free_rooms }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <i class="bi bi-cash-coin text-success"></i> Оплатили:
+            <span class="badge bg-success rounded-pill">{{ paid }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <i class="bi bi-exclamation-circle text-warning"></i> Не оплатили:
+            <span class="badge bg-warning text-dark rounded-pill">{{ unpaid }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <i class="bi bi-flag-fill text-secondary"></i> Выселений всего:
+            <span class="badge bg-secondary rounded-pill">{{ history_evicts }}</span>
+        </li>
+    </ul>
+{% endblock %}

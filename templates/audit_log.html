@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Аудит-лог{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Аудит-лог действий</h2>
+
+<form method="GET" class="row g-3 mb-4">
+    <div class="col-md-4">
+        <input type="text" name="username" class="form-control" placeholder="Имя пользователя"
+               value="{{ request.args.get('username', '') }}">
+    </div>
+    <div class="col-md-4">
+        <input type="text" name="action" class="form-control" placeholder="Тип действия"
+               value="{{ request.args.get('action', '') }}">
+    </div>
+    <div class="col-md-4 d-flex">
+        <button class="btn btn-primary me-2">🔍 Поиск</button>
+        <a href="{{ url_for('audit_log') }}" class="btn btn-secondary">Сброс</a>
+    </div>
+</form>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Пользователь</th>
+            <th>Действие</th>
+            <th>Дата и время</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for log in logs %}
+        <tr>
+            <td>{{ log.id }}</td>
+            <td>{{ log.username }}</td>
+            <td>{{ log.action }}</td>
+            <td>{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

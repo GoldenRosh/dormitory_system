@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Список комнат{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Список комнат</h1>
+    <a href="{{ url_for('add_room') }}" class="btn btn-success mb-3">➕ Добавить комнату</a>
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-primary">
+        <tr>
+            <th>ID</th>
+            <th>Номер комнаты</th>
+            <th>Тип комнаты</th>
+            <th>Действие</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for room in rooms %}
+        <tr>
+            <td>{{ room.id }}</td>
+            <td>{{ room.number }}</td>
+            <td>{{ room.room_type }}</td>
+			<td>
+				{% set occupied = students | selectattr("room_number", "equalto", room.number) | list %}
+				{% if occupied|length == 0 %}
+					<a href="{{ url_for('edit_room', id=room.id) }}" class="btn btn-warning btn-sm">
+						<i class="bi bi-pencil-fill"></i>
+					</a>
+				{% else %}
+					<button disabled class="btn btn-secondary btn-sm">
+						<i class="bi bi-lock-fill"></i>
+					</button>
+				{% endif %}
+				<form action="{{ url_for('delete_room', id=room.id) }}" method="POST" class="d-inline">
+					<button type="submit" class="btn btn-danger btn-sm mb-1">
+						<i class="bi bi-trash-fill"></i>
+					</button>
+				</form>
+			</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

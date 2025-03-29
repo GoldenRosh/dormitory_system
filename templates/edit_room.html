@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Редактировать комнату{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Редактировать комнату</h1>
+
+    <form method="POST" class="row g-3">
+        {{ form.hidden_tag() }}
+
+        <div class="col-md-6">
+            {{ form.number.label(class="form-label") }}
+            {{ form.number(class="form-control") }}
+        </div>
+
+        <div class="col-md-6">
+            {{ form.room_type.label(class="form-label") }}
+            {{ form.room_type(class="form-select") }}
+        </div>
+
+        <div class="col-12">
+            {{ form.submit(class="btn btn-primary") }}
+        </div>
+    </form>
+{% endblock %}

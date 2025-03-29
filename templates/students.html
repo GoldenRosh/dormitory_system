@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Список жильцов{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Список жильцов общежития</h1>
+
+    <form method="GET" action="{{ url_for('students') }}" class="row g-3 mb-4">
+        <div class="col-md-4">
+            {{ form.name.label(class="form-label") }}
+            {{ form.name(class="form-control", size=30) }}
+        </div>
+        <div class="col-md-3">
+            {{ form.room_number.label(class="form-label") }}
+            {{ form.room_number(class="form-control", size=10) }}
+        </div>
+        <div class="col-md-3">
+            {{ form.payment_status.label(class="form-label") }}
+            {{ form.payment_status(class="form-select") }}
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary me-2">🔍 Поиск</button>
+            <a href="{{ url_for('students') }}" class="btn btn-secondary">Сброс</a>
+        </div>
+    </form>
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-primary">
+        <tr>
+            <th>ID</th>
+            <th>ФИО</th>
+            <th>Телефон</th>
+            <th>Комната</th>
+            <th>Тип комнаты</th>
+            <th>Оплата</th>
+            <th>Дата заселения</th>
+            <th>Дата выселения</th>
+            <th>Комментарий</th>
+            <th>Действие</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for student in students %}
+        <tr>
+            <td>{{ student.id }}</td>
+            <td>{{ student.name }}</td>
+            <td>{{ student.phone }}</td>
+            <td>{{ student.room_number }}</td>
+            <td>{{ student.room_type }}</td>
+            <td>{{ student.payment_status }}</td>
+            <td>{{ student.check_in_date }}</td>
+            <td>{{ student.check_out_date if student.check_out_date else "—" }}</td>
+            <td>{{ student.notes if student.notes else "—" }}</td>
+			<td>
+				<a href="{{ url_for('edit_student', id=student.id) }}" class="btn btn-warning btn-sm mb-1">
+				<i class="bi bi-pencil-fill"></i>
+				</a>
+				<form action="{{ url_for('evict_student', id=student.id) }}" method="POST" class="d-inline">
+					<button type="submit" class="btn btn-primary btn-sm mb-1">
+				<i class="bi bi-box-arrow-left"></i>
+					</button>
+				</form>
+				<form action="{{ url_for('delete_student', id=student.id) }}" method="POST" class="d-inline">
+					<button type="submit" class="btn btn-danger btn-sm mb-1">
+				<i class="bi bi-trash-fill"></i>
+					</button>
+				</form>
+			</td>	
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

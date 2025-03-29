@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Добавить жильца{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Добавить жильца</h1>
+
+    <form method="POST" class="row g-3">
+        {{ form.hidden_tag() }}
+
+        <div class="col-md-6">
+            {{ form.name.label(class="form-label") }}
+            {{ form.name(class="form-control") }}
+        </div>
+
+        <div class="col-md-6">
+            {{ form.phone.label(class="form-label") }}
+            {{ form.phone(class="form-control") }}
+        </div>
+
+        <div class="col-md-6">
+            {{ form.room_number.label(class="form-label") }}
+            {{ form.room_number(class="form-select") }}
+        </div>
+
+        <div class="col-md-6">
+            {{ form.room_type.label(class="form-label") }}
+            {{ form.room_type(class="form-control", readonly=true) }}
+        </div>
+
+        <div class="col-md-6">
+            {{ form.payment_status.label(class="form-label") }}
+            {{ form.payment_status(class="form-select") }}
+        </div>
+
+        <div class="col-md-6">
+            {{ form.check_in_date.label(class="form-label") }}
+            <input type="date" name="check_in_date" class="form-control">
+        </div>
+
+        <div class="col-md-6">
+            {{ form.check_out_date.label(class="form-label") }}
+            <input type="date" name="check_out_date" class="form-control">
+        </div>
+
+        <div class="col-md-12">
+            {{ form.notes.label(class="form-label") }}
+            {{ form.notes(class="form-control", rows=3) }}
+        </div>
+
+        <div class="col-12">
+            {{ form.submit(class="btn btn-success") }}
+        </div>
+    </form>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const roomSelect = document.querySelector("select[name='room_number']");
+        const roomTypeField = document.querySelector("input[name='room_type']");
+
+        function updateRoomType() {
+            const selected = roomSelect.options[roomSelect.selectedIndex];
+            if (selected && selected.text.includes("двухместная")) {
+                roomTypeField.value = "Двухместная";
+            } else if (selected && selected.text.includes("одноместная")) {
+                roomTypeField.value = "Одноместная";
+            } else {
+                roomTypeField.value = "";
+            }
+        }
+
+        roomSelect.addEventListener("change", updateRoomType);
+        updateRoomType(); // при загрузке
+    });
+    </script>
+{% endblock %}

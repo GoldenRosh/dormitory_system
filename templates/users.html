@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Пользователи{% endblock %}
+
+{% block content %}
+<h2>Пользователи системы</h2>
+<table class="table table-bordered table-striped">
+    <thead class="table-primary">
+        <tr>
+            <th>ID</th>
+            <th>Логин</th>
+            <th>Роль</th>
+            <th>Действие</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ "Админ" if user.is_admin else "Сотрудник" }}</td>
+            <td>
+                {% if user.id != current_user.id %}
+                <form method="POST" action="{{ url_for('delete_user', user_id=user.id) }}">
+                    <button class="btn btn-sm btn-danger">❌ Удалить</button>
+                </form>
+                {% else %}
+                <span class="text-muted">Текущий пользователь</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

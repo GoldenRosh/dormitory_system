@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}История выселений и удалений{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">История жильцов</h1>
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-primary">
+        <tr>
+            <th>Дата действия</th>
+            <th>Тип действия</th>
+            <th>ФИО</th>
+            <th>Телефон</th>
+            <th>Комната</th>
+            <th>Тип комнаты</th>
+            <th>Оплата</th>
+            <th>Дата заселения</th>
+            <th>Дата выселения</th>
+            <th>Комментарий</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for entry in history %}
+        <tr>
+            {% if entry.action_date.tzinfo %}
+                {% set local_time = entry.action_date.astimezone(pytz.timezone('Asia/Yekaterinburg')) %}
+            {% else %}
+                {% set local_time = entry.action_date.replace(tzinfo=pytz.utc).astimezone(pytz.timezone('Asia/Yekaterinburg')) %}
+            {% endif %}
+            <td>{{ local_time.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td>{{ entry.action_type }}</td>
+            <td>{{ entry.student_name }}</td>
+            <td>{{ entry.phone or '—' }}</td>
+            <td>{{ entry.room_number }}</td>
+            <td>{{ entry.room_type }}</td>
+            <td>{{ entry.payment_status }}</td>
+            <td>{{ entry.check_in_date }}</td>
+            <td>{{ entry.check_out_date if entry.check_out_date else '—' }}</td>
+            <td>{{ entry.notes or '—' }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

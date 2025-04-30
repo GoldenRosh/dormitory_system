@@ -17,5 +17,5 @@ def create_admin():
     print("✅ Администратор создан успешно.")
 
 if __name__ == '__main__':
-    with app.app_context():  # <-- ВАЖНО: создаём контекст Flask-приложения
+    with app.app_context(): 
         create_admin()

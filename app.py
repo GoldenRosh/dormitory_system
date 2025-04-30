@@ -11,7 +11,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 login_manager = LoginManager(app)
-login_manager.login_view = 'login'  # если пользователь не вошёл — перенаправить на /login
+login_manager.login_view = 'login'
 login_manager.login_message = "Пожалуйста, войдите в систему"
 login_manager.login_message_category = "warning"
 app.config['SECRET_KEY'] = 'supersecretkey'
@@ -22,7 +22,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-# 🚀 Модель комнаты
+
 class Room(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     number = db.Column(db.Integer, unique=True, nullable=False)
@@ -31,7 +31,7 @@ class Room(db.Model):
     def __repr__(self):
         return f"<Room {self.number} - {self.room_type}>"
 
-# 🚀 Модель жильцов
+
 class Student(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
@@ -46,7 +46,7 @@ class Student(db.Model):
     def __repr__(self):
         return f"<Student {self.name}, Room {self.room_number}>"
     
-# 🚀 Модель истории поселения    
+ 
 class SettlementHistory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     student_name = db.Column(db.String(100), nullable=False)
@@ -57,13 +57,13 @@ class SettlementHistory(db.Model):
     check_in_date = db.Column(db.Date, nullable=True)
     check_out_date = db.Column(db.Date, nullable=True)
     notes = db.Column(db.Text, nullable=True)
-    action_type = db.Column(db.String(20), nullable=False)  # "выселение", "удаление"
+    action_type = db.Column(db.String(20), nullable=False)
     action_date = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
     def __repr__(self):
         return f"<История: {self.student_name} - {self.action_type}>"
 
-# Модель пользователя (сотрудника)
+
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True, nullable=False)
@@ -75,9 +75,9 @@ def load_user(user_id):
 
 class AuditLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(100))  # Кто выполнил
-    action = db.Column(db.String(255))    # Что сделал
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)  # Когда сделал
+    username = db.Column(db.String(100))  
+    action = db.Column(db.String(255))    
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow) 
 
     def __repr__(self):
         return f"<AuditLog {self.username} - {self.action}>"
@@ -168,14 +168,14 @@ def delete_user(user_id):
     return redirect(url_for("users"))
 
 
-# 🚀 Страница списка комнат
+
 @app.route('/rooms')
 @login_required
 def rooms():
     all_rooms = Room.query.all()
     return render_template('rooms.html', rooms=all_rooms)
 
-# 🚀 Страница добавления комнаты
+
 @app.route('/add-room', methods=['GET', 'POST'])
 @login_required
 def add_room():
@@ -204,7 +204,7 @@ def add_room():
 
     return render_template('add_room.html', form=form)
 
-# 🚀 Маршрут для удаления комнаты
+
 @app.route('/delete-room/<int:id>', methods=['POST'])
 @login_required
 def delete_room(id):
@@ -218,7 +218,7 @@ def delete_room(id):
         flash("Ошибка: Комната не найдена!", "danger")
         return redirect(url_for("rooms"))
 
-    # Проверяем, есть ли жильцы в этой комнате
+    
     occupied = Student.query.filter_by(room_number=room.number).first()
     
     if occupied:
@@ -232,7 +232,7 @@ def delete_room(id):
 
     return redirect(url_for('rooms'))
 
-# 🚀 Страница списка жильцов
+
 @app.route('/students', methods=['GET', 'POST'])
 @login_required
 def students():
@@ -251,13 +251,13 @@ def students():
     return render_template('students.html', students=filtered_students, form=form)
 
 
-# 🚀 Страница добавления жильца
+
 @app.route('/add-student', methods=['GET', 'POST'])
 @login_required
 def add_student():
     form = StudentForm()
 
-    # Формируем список только свободных комнат
+    
     available_rooms = []
     all_rooms = Room.query.order_by(Room.number).all()
     for room in all_rooms:
@@ -269,7 +269,7 @@ def add_student():
 
     form.room_number.choices = available_rooms
 
-    # Автозаполнение типа комнаты (при первом открытии страницы или при ошибке)
+    
     if form.room_number.data:
         selected_room = Room.query.filter_by(number=form.room_number.data).first()
         if selected_room:
@@ -310,7 +310,7 @@ def add_student():
     return render_template("add_student.html", form=form)
 
 
-# Новый маршрут для получения типа комнаты по номеру комнаты
+
 @app.route('/get-room-type/<int:room_number>', methods=['GET'])
 def get_room_type(room_number):
     room = Room.query.filter_by(number=room_number).first()
@@ -319,21 +319,21 @@ def get_room_type(room_number):
     else:
         return jsonify({'error': 'Комната не найдена'}), 404
         
-# 🚀 Маршрут для редактирования жильца
+
 @app.route('/edit-student/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit_student(id):
-    student = Student.query.get_or_404(id)  # Получаем студента по ID
-    form = StudentForm(obj=student)  # Создаем форму с данными текущего студента
+    student = Student.query.get_or_404(id) 
+    form = StudentForm(obj=student)  
 
-    # Обновляем список доступных комнат в поле room_number
+   
     available_rooms = Room.query.all()
     form.room_number.choices = [(room.number, f"Комната {room.number} ({room.room_type})") for room in available_rooms]
     
-    # Обновляем список доступных типов комнат
+    
     form.room_type.choices = [("Одноместная", "Одноместная"), ("Двухместная", "Двухместная")]
 
-    if form.validate_on_submit():  # Если форма прошла валидацию
+    if form.validate_on_submit():  
         student.name = form.name.data
         student.phone = form.phone.data
         student.room_number = form.room_number.data
@@ -343,14 +343,14 @@ def edit_student(id):
         student.check_out_date = form.check_out_date.data if form.check_out_date.data else None
         student.notes = form.notes.data
 
-        db.session.commit()  # Сохраняем изменения в базе
+        db.session.commit()  
         log_action(f"отредактировал жильца: {student.name}")
-        flash("Данные жильца обновлены!", "success")  # Уведомление об успешном редактировании
-        return redirect(url_for("students"))  # Перенаправляем на страницу списка жильцов
+        flash("Данные жильца обновлены!", "success")  
+        return redirect(url_for("students"))  
 
-    return render_template('edit_student.html', form=form, student=student)  # Отображаем форму для редактирования
+    return render_template('edit_student.html', form=form, student=student)  
 
-# 🚀 Маршрут для удаления жильца
+
 @app.route('/delete-student/<int:id>', methods=['POST'])
 @login_required
 def delete_student(id):
@@ -360,7 +360,7 @@ def delete_student(id):
 
     student = Student.query.get(id)
     if student:
-        # Сохраняем информацию в историю перед удалением
+        
         history_entry = SettlementHistory(
             student_name=student.name,
             phone=student.phone,
@@ -374,7 +374,7 @@ def delete_student(id):
         )
         db.session.add(history_entry)
 
-        # Удаляем студента
+        
         log_action(f"удалил жильца: {student.name}")
         db.session.delete(student)
         db.session.commit()
@@ -385,7 +385,7 @@ def delete_student(id):
     return redirect(url_for('students'))
 
     
-# 🚀 Маршрут для редактирования комнаты
+
 @app.route('/edit-room/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit_room(id):
@@ -396,7 +396,7 @@ def edit_room(id):
     room = Room.query.get_or_404(id)
     form = RoomForm(obj=room)
 
-    # Проверяем, занята ли комната
+   
     occupied = Student.query.filter_by(room_number=room.number).first()
     
     if occupied:
@@ -404,7 +404,7 @@ def edit_room(id):
         return redirect(url_for("rooms"))
 
     if form.validate_on_submit():
-        # Проверяем, если номер уже существует (кроме текущей комнаты)
+        
         existing_room = Room.query.filter(Room.number == form.number.data, Room.id != id).first()
         if existing_room:
             flash("Ошибка: Комната с таким номером уже существует!", "danger")
@@ -425,7 +425,7 @@ def edit_room(id):
 def evict_student(id):
     student = Student.query.get(id)
     if student:
-        # Запись в историю
+       
         history_entry = SettlementHistory(
             student_name=student.name,
             phone=student.phone,
@@ -439,7 +439,7 @@ def evict_student(id):
         )
         db.session.add(history_entry)
 
-        # Обновление поля check_out_date у текущего жильца
+        
         student.check_out_date = datetime.utcnow()
         db.session.commit()
         log_action(f"выселил жильца: {student.name}, комната {student.room_number}")
@@ -492,15 +492,15 @@ def report():
     total_rooms = Room.query.count()
     total_students = Student.query.filter_by(check_out_date=None).count()
 
-    # Занятость комнат
+   
     occupied_rooms = db.session.query(Student.room_number).filter(Student.check_out_date == None).distinct().count()
     free_rooms = total_rooms - occupied_rooms
 
-    # Оплата
+    
     paid = Student.query.filter_by(payment_status="Оплачено", check_out_date=None).count()
     unpaid = Student.query.filter_by(payment_status="Не оплачено", check_out_date=None).count()
 
-    # Выселения
+    
     history_evicts = SettlementHistory.query.filter_by(action_type="выселение").count()
 
     return render_template("report.html",
